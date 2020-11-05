@@ -5,16 +5,16 @@
 ###     (Two options are selected: "Accept Pseudo Instructions", "Enable Mapped IO")
 ###     Also, unchecked "Load Exception Handler" to simplify the output in the GUI
 ###
+### Objectives:
+###     Read two integers from keyboard, sum them up, and print the result to console
+###
 ### Note:
-###     This lab will print your name and the date (1008) in two lines
-
+###     This lab uses several operations, including I/O, arithmetic, and system call
+###
 ### --------------------------
 ### This is the data segment
 ### --------------------------
     .data
-
-myName:  .asciiz     "Tachun Lin\n"
-date:    .word       1008
 
 ### ----------------------------------------------------
 ### This is the user text segment (instructions go here)
@@ -23,17 +23,26 @@ date:    .word       1008
     .globl  main
 
 main:
-    li $v0, 4           # system call #4 => print a message
-    la $a0, myName      # provide the string info to be printed out
-    syscall             # make the system call    
-
-    li $v0, 1
-    lw $a0, date
+    # read two integers from keyboard
+    li $v0, 5
     syscall
 
-    # Terminate the program
+    # store the integer into $a0 (as an operand for addition)
+    move $a0, $v0
+
+    li $v0, 5
+    syscall
+    move $a1, $v0
+
+    # sum them up and store the result in $a0 (for printing)
+    add $a0, $a0, $a1
+
+    # print the result
+    li $v0, 1
+    syscall
+
+# Terminate the program
     li $v0, 10
     syscall
 
-.end main
 ### End of file
