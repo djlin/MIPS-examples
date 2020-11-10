@@ -10,7 +10,6 @@
 ###         power(x, y) = x^y
 ###         power(2, 3) = 2^3 = 8
 ###     For simplicity, we assume that both x and y are > 1.
-###			x is the base, and y is the power term.
 ###
 ### --------------------------
 ### This is the data segment
@@ -38,8 +37,6 @@ main:
     syscall
     move $t0, $v0
 
-    # [ implemeent your code here ]
-
     # prompt to enter the second integer
     li $v0, 4
     la $a0, prompt2
@@ -50,14 +47,20 @@ main:
     syscall
     move $t1, $v0
 
-		# prepare the parameters for the function call
-		move $a0, $t0
-		move $a1, $t0
-		move $a2, $t1
+		# Note: the reason why I use $t0 and $t1 instead of
+		#			$a0 and $a1 is because the system call above
+		#			will overwrite the content of $a0
+	
+    # provide parameters for the function call
+		#		function calls can carry parameters from $a0~$a3
+    # use $a0 for result
+    # use $a1 for the base
+    # use $a2 for the power term (loop control)
+    move $a0, $t0
+    move $a1, $t0
+    move $a2, $t1  
 
-    # call the power function
-    # function call will carry the parameters through
-    # $a0, $a1, $a2, $a3
+    # run the power function
     jal power
 
 # Terminate the program
@@ -67,30 +70,28 @@ main:
 .end main
 
 power:
-    # [ implement the power function here ]
-    # use $a0 for multiplication result
-    # I fix the $a1 for the base value
-		mul $a0, $a0, $a1
-		
-		# print out the temp values
+
+    # implement the power function here
+    mul $a0, $a0, $a1
+
+    # print out the temporary results (for debugging/final results)
     li $v0, 1
-		syscall
+    syscall
 
-		# to avoid $a0 from being overwritten...
-		move $t0, $a0
+    # keep the multiplication result in $a0, or it will be overwritten
+    move $t0, $a0
 
-		# syscal to print new line char to separate the output
-		li $v0, 4
-		la $a0, newline
-		syscall
-		
-		# restore the $a0 value for following calc.
-		move $a0, $t0
+    # separate the outputs
+    li $v0, 4
+    la $a0, newline
+    syscall
 
-		# check if we should continue the loop
-		# we have the original power term stored in $a2
-		sub $a2, $a2, 1
-		bne $a2, 0, power
+    # restore the result to $a0
+    move $a0, $t0
+
+    # check if we should continue the loop
+    sub $a2, $a2, 1
+    bne $a2, 1, power
 
     # return to the function caller
     jr $ra
