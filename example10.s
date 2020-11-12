@@ -9,7 +9,7 @@
 ###     This example shows different addressing modes.
 ###
 ### Important concept:
-###			Addressing modee is "how an address (memory or register) is determined.
+###			Addressing modee is "how an address (memory or register) is determined."
 ###
 ### --------------------------
 ### This is the data segment
